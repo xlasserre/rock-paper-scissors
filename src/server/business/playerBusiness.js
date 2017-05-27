@@ -10,7 +10,7 @@ var getPlayerByName = (data, res) => {
 
         }
     });
-},
+};
 
 var updatePlayer = (data, res) => {
     var playerId = data.id;
@@ -23,7 +23,7 @@ var updatePlayer = (data, res) => {
             
         }
     });
-},
+};
 
 var insertPlayer = (data, res) => {
     var playerName = data.name;
@@ -47,9 +47,8 @@ var insertPlayer = (data, res) => {
         } else { //player exists, error
             
         }
-    });
-    
-}
+    }); 
+};
 
 findIfPlayerExists = (name, callback) => {
     Player.find({name: playerName}, function(err, player) {

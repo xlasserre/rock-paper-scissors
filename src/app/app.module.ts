@@ -5,11 +5,26 @@ import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 import { RoundComponent } from './round/round.component';
+import { HomeComponent } from './home/home.component';
+
+// Define the routes
+const ROUTES = [
+  {
+    path: '',
+    redirectTo: 'home',
+    pathMatch: 'full'
+  },
+  {
+    path: 'home',
+    component: HomeComponent
+  }
+];
 
 @NgModule({
   declarations: [
     AppComponent,
-    RoundComponent
+    RoundComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
