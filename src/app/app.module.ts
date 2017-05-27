@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { RoundComponent } from './round/round.component';
@@ -17,6 +18,10 @@ const ROUTES = [
   {
     path: 'home',
     component: HomeComponent
+  },
+  {
+    path: 'round',
+    component: RoundComponent
   }
 ];
 
@@ -29,7 +34,8 @@ const ROUTES = [
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule
+    HttpModule,
+    RouterModule.forRoot(ROUTES)
   ],
   providers: [],
   bootstrap: [AppComponent]
