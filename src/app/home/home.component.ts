@@ -19,7 +19,10 @@ export class HomeComponent implements OnInit {
 	ngOnInit() { }
 
 	onSubmit(): void {
-		if (this.sanitizeName(this.playerOne) === this.sanitizeName(this.playerTwo)) {
+		if (!this.playerOne || !this.playerTwo || 
+			!this.playerOne.trim().length || !this.playerTwo.trim().length) {
+			this.errorMessage = 'Names cannot be blank!';
+		} else if (this.sanitizeName(this.playerOne) === this.sanitizeName(this.playerTwo)) {
 			this.errorMessage = 'You cannot play against yourself!';
 		} else {
 			this.router.navigate(['/round', this.sanitizeName(this.playerOne), this.sanitizeName(this.playerTwo)]);
