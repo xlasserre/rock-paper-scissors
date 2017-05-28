@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'app-home',
@@ -7,12 +8,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-	players: Object[];
+	playerOne: String;
+	playerTwo: String;
 
-	constructor() { }
-
-	ngOnInit() {
+	constructor(private router: Router) {
 		
+	 }
+
+	ngOnInit() { }
+
+	onSubmit(): void {
+		this.router.navigate(['/round', this.playerOne, this.playerTwo]);
 	}
 
 }

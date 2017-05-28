@@ -1,19 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+
+import { PlayersService } from '../services/players.service';
 
 @Component({
 	selector: 'app-round',
 	templateUrl: './round.component.html',
-	styleUrls: ['./round.component.css']
+	styleUrls: ['./round.component.css'],
+	providers: [PlayersService]
 })
 export class RoundComponent implements OnInit {
 
+	playersNames: String[];
 	players: {
 		id: String, 
 		name: String, 
 		points: number, 
 		currentPoints: number,
 		playerNumber: number,
-	}[];
+	}[] = [];
 	existingMoves: {
 		"move": String,
 		"kills": String
@@ -28,7 +33,20 @@ export class RoundComponent implements OnInit {
 	}[] = [];
 	lastSelectedMove: String;
 
-	constructor() {
+	constructor(private route: ActivatedRoute) {
+		this.players = [ {
+			id: undefined, 
+			name: '', 
+			points: undefined, 
+			currentPoints: 0,
+			playerNumber: undefined,
+		}, {
+			id: undefined, 
+			name: '', 
+			points: undefined, 
+			currentPoints: 0,
+			playerNumber: undefined,
+		} ];
 		this.createNewRound(1);
 		this.currentPlayer = 1;
 		this.existingMoves = [
@@ -48,10 +66,18 @@ export class RoundComponent implements OnInit {
 	 }
 
 	ngOnInit() {
+		this.route.params.subscribe(params => {
+			let p1 = params['playerOne'];
+			let p2 = params['playerTwo'];
+
+		});
+		console.log(this.playersNames);
 		console.log(this.currentPlayer);
 		console.log(this.currentRound);
 		console.log(this.players);
+		console.log(this.existingMoves);
 	}
+
 
 	/*
 	 * Checks if player two played, and continues the round,
@@ -115,20 +141,22 @@ export class RoundComponent implements OnInit {
 		let player1MoveObject = this.getMoveChosen(1);
 
 		if (player1MoveObject[0].kills === round.playerTwoMove) { //player 1 won round
-			round.winner = this.players[0].name;
-			this.players[0].currentPoints++;
+			if (this.players[0]) {
+				round.winner = this.players[0].name;
+				this.players[0].currentPoints++;
+			}
 		} else { //player 1 did not win, check if player 2 won
 			let player2MoveObject = this.getMoveChosen(2);
 
 			if (player2MoveObject[0].kills === round.playerOneMove) {
-				round.winner = this.players[1].name;
-				this.players[1].currentPoints++;
+				if (this.players[1]) {
+					round.winner = this.players[1].name;
+					this.players[1].currentPoints++;
+				}
 			} else { //tie
 				round.winner = 'tie';
 			}
 		}
-
-
 	}
 
 	/*

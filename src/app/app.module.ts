@@ -9,6 +9,8 @@ import { RoundComponent } from './round/round.component';
 import { HomeComponent } from './home/home.component';
 import { WinnerComponent } from './winner/winner.component';
 
+import { PlayersService } from './services/players.service';
+
 // Define the routes
 const ROUTES = [
   {
@@ -21,11 +23,11 @@ const ROUTES = [
     component: HomeComponent
   },
   {
-    path: 'round',
+    path: 'round/:playerOne/:playerTwo',
     component: RoundComponent
   },
   {
-    winner: 'winner',
+    path: 'winner',
     component: WinnerComponent
   }
 ];
@@ -34,7 +36,8 @@ const ROUTES = [
   declarations: [
     AppComponent,
     RoundComponent,
-    HomeComponent
+    HomeComponent, 
+    WinnerComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +45,7 @@ const ROUTES = [
     HttpModule,
     RouterModule.forRoot(ROUTES)
   ],
-  providers: [],
+  providers: [ PlayersService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
