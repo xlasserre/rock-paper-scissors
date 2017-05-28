@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
 	selector: 'app-winner',
@@ -7,12 +8,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class WinnerComponent implements OnInit {
 
-	constructor() {
+	gameWinner: String;
+
+	constructor(private route: ActivatedRoute) {
 		
 	 }
 
 	ngOnInit() {
-		
+		this.route.params.subscribe(params => {
+			this.gameWinner = params['gameWinner'];
+		});
 	}
 
 }

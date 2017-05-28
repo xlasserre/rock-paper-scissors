@@ -3,11 +3,13 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 import { AppComponent } from './app.component';
 import { RoundComponent } from './round/round.component';
 import { HomeComponent } from './home/home.component';
 import { WinnerComponent } from './winner/winner.component';
+import { ScoreComponent } from './score/score.component';
 
 import { PlayersService } from './services/players.service';
 
@@ -27,7 +29,7 @@ const ROUTES = [
     component: RoundComponent
   },
   {
-    path: 'winner',
+    path: 'winner/:gameWinner',
     component: WinnerComponent
   }
 ];
@@ -37,13 +39,15 @@ const ROUTES = [
     AppComponent,
     RoundComponent,
     HomeComponent, 
-    WinnerComponent
+    WinnerComponent,
+    ScoreComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    RouterModule.forRoot(ROUTES)
+    RouterModule.forRoot(ROUTES),
+    CommonModule
   ],
   providers: [ PlayersService ],
   bootstrap: [AppComponent]

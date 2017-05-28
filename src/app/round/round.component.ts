@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { PlayersService } from '../services/players.service';
 
@@ -7,7 +7,7 @@ import { PlayersService } from '../services/players.service';
 	selector: 'app-round',
 	templateUrl: './round.component.html',
 	styleUrls: ['./round.component.css'],
-	providers: [PlayersService]
+	providers: [PlayersService],
 })
 export class RoundComponent implements OnInit {
 
@@ -36,9 +36,11 @@ export class RoundComponent implements OnInit {
 		winner: String
 	}[] = [];
 	errorMessage: String = undefined;
+	gameWinner: String;
 
 	constructor(private route: ActivatedRoute,
-				private playersService: PlayersService) {
+				private playersService: PlayersService,
+				private router: Router) {
 		this.players = [ {
 			_id: undefined, 
 			name: '', 
@@ -98,7 +100,7 @@ export class RoundComponent implements OnInit {
 							let player2Updated = Object.assign(this.players[1], data.obj[0]);
 							this.players[1] = player2Updated;
 						} else { //else just add name
-							this.players[0].name = p1;
+							this.players[1].name = p2;
 						}
 					}
 				},
@@ -108,7 +110,6 @@ export class RoundComponent implements OnInit {
 		console.log(this.currentPlayer);
 		console.log(this.currentRound);
 		console.log(this.players);
-		console.log(this.existingMoves);
 	}
 
 
@@ -117,6 +118,7 @@ export class RoundComponent implements OnInit {
 	 * or starts a new one
 	 */
 	nextPlayerOrRound(): void {
+		console.log('currentPlayer', this.currentPlayer);
 		if (this.currentPlayer === 1) {
 			if (!this.currentRound.playerOneMove) { //they did not chose move
 				this.errorMessage = 'You must choose a move';
@@ -131,6 +133,9 @@ export class RoundComponent implements OnInit {
 				this.nextRoundOrFinish();
 			}
 		}	
+		console.log('this.rounds', this.rounds);
+		console.log('this.currentRound', this.currentRound);
+		console.log('this.players', this.players);
 	}
 
 	nextRoundOrFinish(): void {
@@ -141,21 +146,25 @@ export class RoundComponent implements OnInit {
 			//create new round
 			this.createNewRound(this.currentRound.roundNumber + 1);
 			this.currentPlayer = 1;
-		} else if (this.currentRound.roundNumber === 2) { // if not tie, end
-			if (this.players[0].currentPoints === this.players[1].currentPoints) {
-				//create new round
-				this.createNewRound(this.currentRound.roundNumber + 1);
-				this.currentPlayer = 1;
+		} else if (this.currentRound.roundNumber >= 2) { //if tie, or diff by one point
+			if (this.players[0].currentPoints === this.players[1].currentPoints ||
+				this.players[0].currentPoints - this.players[1].currentPoints === 1 ||
+				this.players[1].currentPoints - this.players[0].currentPoints === 1) {
+					//create new round
+					this.createNewRound(this.currentRound.roundNumber + 1);
+					this.currentPlayer = 1;
 			} else {
-				if (this.players[0].currentPoints > this.players[1].currentPoints) { //player 1 won
-					//save data
-
-					//go to winner page
+				if (this.players[0].currentPoints > this.players[1].currentPoints) { //player 1 won					
+					this.gameWinner = this.players[0].name;
 				} else { //player 2 won
-
+					this.gameWinner = this.players[1].name;
 				}
+				//save data
+
+				//go to winner page
+				this.router.navigate(['/winner', this.gameWinner]);
 			}
-		} else { //if fourth round, there is a winner			
+		} /*else { //if fourth round, there is a winner			
 			if (this.players[0].currentPoints > this.players[1].currentPoints) { //player 1 won
 				//save data
 
@@ -163,8 +172,9 @@ export class RoundComponent implements OnInit {
 			} else { //player 2 won
 
 			}
-			
-		}
+		}*/
+		console.log('this.rounds', this.rounds);
+		console.log('this.players', this.players);
 	}
 
 	/*
@@ -204,6 +214,8 @@ export class RoundComponent implements OnInit {
 				this.currentRound.winner = 'tie';
 			}
 		}
+		console.log('this.rounds', this.rounds);
+		console.log('this.players', this.players);
 	}
 
 	/*
