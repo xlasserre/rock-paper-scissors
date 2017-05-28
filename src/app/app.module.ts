@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { RoundComponent } from './round/round.component';
 import { HomeComponent } from './home/home.component';
+import { WinnerComponent } from './winner/winner.component';
 
 // Define the routes
 const ROUTES = [
@@ -22,6 +23,10 @@ const ROUTES = [
   {
     path: 'round',
     component: RoundComponent
+  },
+  {
+    winner: 'winner',
+    component: WinnerComponent
   }
 ];
 
