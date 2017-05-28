@@ -15,6 +15,9 @@
 				</div>
 			</div>
 			<button type="submit" class="btn btn-info">Start!</button>
+			<div *ngIf="errorMessage" class="mt-4">
+				<b class="text-danger">{{errorMessage}}</b>
+			</div>
 		</form>
 	</div>
 </div>

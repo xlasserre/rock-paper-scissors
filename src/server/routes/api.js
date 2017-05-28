@@ -8,17 +8,14 @@ router.get('/', (req, res) => {
 	res.send('api works');
 });
 
-router.post('/action/getPlayer', function(err, res) {
-	PlayerBusiness.getPlayerByName(data, res);
+router.post('/action/getPlayerByName', function(req, res) {
+	PlayerBusiness.getPlayerByName(req.body, res);
 });
 
-router.post('/action/updatePlayer', function(err, res) {
-	PlayerBusiness.updatePlayer(data, res);
+router.post('/action/upsertPlayer', function(req, res) {
+	PlayerBusiness.upsertPlayer(req.body, res);
 });
 
-router.post('/action/insertPlayer', function(err, res) {
-	PlayerBusiness.insertPlayer(data, res);
-});
 
 
 module.exports = router;

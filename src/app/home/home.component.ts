@@ -10,6 +10,7 @@ export class HomeComponent implements OnInit {
 
 	playerOne: String;
 	playerTwo: String;
+	errorMessage: String = undefined;
 
 	constructor(private router: Router) {
 		
@@ -18,7 +19,11 @@ export class HomeComponent implements OnInit {
 	ngOnInit() { }
 
 	onSubmit(): void {
-		this.router.navigate(['/round', this.playerOne, this.playerTwo]);
+		if (this.playerOne.toLowerCase().trim() === this.playerTwo.toLowerCase().trim()) {
+			this.errorMessage = 'You cannot play against yourself!';
+		} else {
+			this.router.navigate(['/round', this.playerOne, this.playerTwo]);
+		}
 	}
 
 }

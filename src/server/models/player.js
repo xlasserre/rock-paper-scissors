@@ -12,4 +12,4 @@ var schema = new Schema({
     }
 });
 
-module.export = mongoose.model('Player', schema);
+module.exports = mongoose.model('Player', schema);

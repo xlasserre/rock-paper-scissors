@@ -1,21 +1,35 @@
 import { Injectable } from '@angular/core';
-import { Subject }    from 'rxjs/Subject';
+import { Http, Headers } from '@angular/http';
+import { Observable } from 'rxjs';
+import 'rxjs/add/operator/map';
 
 @Injectable()
 export class PlayersService {
     
-	private playersNames = new Subject<String[]>();
-	private winner = new Subject<string>();
+	constructor(private http: Http) { }
 
-	playersNames$ = this.playersNames.asObservable();
-	winner$ = this.winner.asObservable();
+	data = {};
+	env_url = 'http://localhost:3000';
 
-	publishPlayers(data: String[]) {
-		console.log(data);
-		this.playersNames.next(data);
-	
+	getPlayer(name: String) {
+		this.data = {
+			playerName: name
+		}
+		let body = JSON.stringify(this.data);
+		let headers = new Headers({'Content-Type': 'application/json'});
+		return this.http.post(this.env_url + '/api/action/getPlayerByName', body, {headers: headers})
+      		.map(res => res.json())
+			.catch(error => Observable.throw(error.json()));
 	}
-	publishWinner(data: string) {
-		this.winner.next(data);
+
+	upsertPlayer(player: {}) {
+		this.data = {
+			player: player
+		}
+		let body = JSON.stringify(this.data);
+		let headers = new Headers({'Content-Type': 'application/json'});		
+		return this.http.post(this.env_url + '/api/action/upsertPlayer', body, {headers: headers})
+      		.map(res => res.json())
+			.catch(error => Observable.throw(error.json()));
 	}
 }

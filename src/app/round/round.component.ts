@@ -33,19 +33,20 @@ export class RoundComponent implements OnInit {
 	}[] = [];
 	lastSelectedMove: String;
 
-	constructor(private route: ActivatedRoute) {
+	constructor(private route: ActivatedRoute,
+				private playersService: PlayersService) {
 		this.players = [ {
 			id: undefined, 
 			name: '', 
 			points: undefined, 
 			currentPoints: 0,
-			playerNumber: undefined,
+			playerNumber: 1,
 		}, {
 			id: undefined, 
 			name: '', 
 			points: undefined, 
 			currentPoints: 0,
-			playerNumber: undefined,
+			playerNumber: 2,
 		} ];
 		this.createNewRound(1);
 		this.currentPlayer = 1;
@@ -70,6 +71,17 @@ export class RoundComponent implements OnInit {
 			let p1 = params['playerOne'];
 			let p2 = params['playerTwo'];
 
+			this.playersService.getPlayer(p1)
+				.subscribe(
+					data => {
+						let newPlayer = {
+							playerNumber: 1,
+							currentPoints: 0,
+						};
+						console.log(data);
+					},
+					error => { console.log(error); }
+				);
 		});
 		console.log(this.playersNames);
 		console.log(this.currentPlayer);
