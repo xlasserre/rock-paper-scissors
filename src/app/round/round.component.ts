@@ -11,7 +11,6 @@ import { PlayersService } from '../services/players.service';
 })
 export class RoundComponent implements OnInit {
 
-	playersNames: String[];
 	players: {
 		_id: String, 
 		name: String, 
@@ -24,14 +23,18 @@ export class RoundComponent implements OnInit {
 		"kills": String
 	}[];
 	currentPlayer: number;
-	currentRound: number;
+	currentRound: {
+		roundNumber: number,
+		playerOneMove: String,
+		playerTwoMove: String,
+		winner: String
+	};
 	rounds: {
 		roundNumber: number,
 		playerOneMove: String,
 		playerTwoMove: String,
 		winner: String
 	}[] = [];
-	lastSelectedMove: String;
 	errorMessage: String = undefined;
 
 	constructor(private route: ActivatedRoute,
@@ -98,12 +101,10 @@ export class RoundComponent implements OnInit {
 							this.players[0].name = p1;
 						}
 					}
-					console.log(this.players);
 				},
 				error => { this.errorMessage = error; }
 			);
 		});
-		console.log(this.playersNames);
 		console.log(this.currentPlayer);
 		console.log(this.currentRound);
 		console.log(this.players);
@@ -116,29 +117,36 @@ export class RoundComponent implements OnInit {
 	 * or starts a new one
 	 */
 	nextPlayerOrRound(): void {
-		if (!this.rounds[this.currentRound - 1].playerTwoMove) { //if player two did not play, round continues
-			this.rounds[this.currentRound - 1].playerOneMove = this.lastSelectedMove;
-			this.currentPlayer = 2;
-		} else { //round finished, find winner and start a new one or finish
-			this.rounds[this.currentRound - 1].playerTwoMove = this.lastSelectedMove;
-			this.checkRoundWinner();
-			this.nextRoundOrFinish();
-		}
+		if (this.currentPlayer === 1) {
+			if (!this.currentRound.playerOneMove) { //they did not chose move
+				this.errorMessage = 'You must choose a move';
+			} else { //player 2 continues
+				this.currentPlayer = 2;
+			}
+		} else { //current player 2
+			if (!this.currentRound.playerTwoMove) { //they did not chose move
+				this.errorMessage = 'You must choose a move';
+			} else { //round finished, find winner and start a new one or finish
+				this.checkRoundWinner();
+				this.nextRoundOrFinish();
+			}
+		}	
 	}
 
 	nextRoundOrFinish(): void {
 		
-		//check if round has not reached 3
-		if (this.currentRound < 3) { //next round, add points
+		//add current round to rounds
+		this.rounds.push(this.currentRound);	
+		if (this.currentRound.roundNumber === 1) { // continue
 			//create new round
-			this.createNewRound(this.currentRound + 1);
+			this.createNewRound(this.currentRound.roundNumber + 1);
 			this.currentPlayer = 1;
-		} else { //if more than third round, check if tie or not
-			if (this.players[0].currentPoints === this.players[1].currentPoints) { //if tie, continue
+		} else if (this.currentRound.roundNumber === 2) { // if not tie, end
+			if (this.players[0].currentPoints === this.players[1].currentPoints) {
 				//create new round
-				this.createNewRound(this.currentRound + 1);
+				this.createNewRound(this.currentRound.roundNumber + 1);
 				this.currentPlayer = 1;
-			} else { //not tie, there is a winner
+			} else {
 				if (this.players[0].currentPoints > this.players[1].currentPoints) { //player 1 won
 					//save data
 
@@ -147,11 +155,20 @@ export class RoundComponent implements OnInit {
 
 				}
 			}
+		} else { //if fourth round, there is a winner			
+			if (this.players[0].currentPoints > this.players[1].currentPoints) { //player 1 won
+				//save data
+
+				//go to winner page
+			} else { //player 2 won
+
+			}
+			
 		}
 	}
 
 	/*
-	 * Creates a new round, and adds it to the rounds array
+	 * Creates a new round
 	 */
 	createNewRound(roundNumber: number) : void {
 		let newRound = {
@@ -160,33 +177,31 @@ export class RoundComponent implements OnInit {
 			playerTwoMove: undefined,
 			winner: undefined
 		} 
-		this.rounds.push(newRound);
-		//update current round number
-		this.currentRound = roundNumber;
+		//update current round 
+		this.currentRound = newRound;
 	}
 
 	/*
 	 * Checks who won the round
 	 */
 	checkRoundWinner() : void {
-		let round = this.rounds[this.currentRound - 1];
 		let player1MoveObject = this.getMoveChosen(1);
 
-		if (player1MoveObject[0].kills === round.playerTwoMove) { //player 1 won round
+		if (player1MoveObject[0].kills === this.currentRound.playerTwoMove) { //player 1 won round
 			if (this.players[0]) {
-				round.winner = this.players[0].name;
+				this.currentRound.winner = this.players[0].name;
 				this.players[0].currentPoints++;
 			}
 		} else { //player 1 did not win, check if player 2 won
 			let player2MoveObject = this.getMoveChosen(2);
 
-			if (player2MoveObject[0].kills === round.playerOneMove) {
+			if (player2MoveObject[0].kills === this.currentRound.playerOneMove) {
 				if (this.players[1]) {
-					round.winner = this.players[1].name;
+					this.currentRound.winner = this.players[1].name;
 					this.players[1].currentPoints++;
 				}
 			} else { //tie
-				round.winner = 'tie';
+				this.currentRound.winner = 'tie';
 			}
 		}
 	}
@@ -197,7 +212,7 @@ export class RoundComponent implements OnInit {
 	 * move it kills
 	 */
 	getMoveChosen(playerNumber : number) : Object {
-		let round = this.rounds[this.currentRound - 1];
+		let round = this.currentRound;
 		return this.existingMoves.filter(function(moveObj){
 			if (playerNumber === 1) return moveObj.move === round.playerOneMove;
 			else return moveObj.move === round.playerTwoMove;

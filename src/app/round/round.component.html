@@ -1,12 +1,17 @@
 <div class="round-container m-2 justify-content-center">
 	<h1>Round {{ currentRound }}</h1>
-	<h2 ng-if="players.[currentPlayer - 1].name.length"> {{ players[currentPlayer - 1].name }}, it's your turn! </h2>
+	<h2 *ng-if="players.[currentPlayer - 1].name.length"> {{ players[currentPlayer - 1].name }}, it's your turn! </h2>
 	<div>
 		<form>
 			<div class="form-group row justify-content-center">
 				<label class="col-2 col-form-label" for="moveSelection">Select Move:</label>
-				<div class="col-sm-3">
-					<select class="custom-select" [(ngModel)]="lastSelectedMove" name="lastSelectedMove">
+				<div id="playerOneSelection" class="col-sm-3" *ng-if="currentPlayer === 1">
+					<select class="custom-select" [(ngModel)]="lastSelectedMove" name="currentRound.playerOneMove">
+						<option *ngFor="let moveObject of existingMoves" [value]="moveObject.move">{{moveObject.move}}</option>
+					</select>
+				</div>
+				<div id="playerTwoSelection" class="col-sm-3" *ng-if="currentPlayer === 2">
+					<select class="custom-select" [(ngModel)]="lastSelectedMove" name="currentRound.playerTwoMove">
 						<option *ngFor="let moveObject of existingMoves" [value]="moveObject.move">{{moveObject.move}}</option>
 					</select>
 				</div>
