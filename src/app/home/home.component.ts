@@ -19,11 +19,15 @@ export class HomeComponent implements OnInit {
 	ngOnInit() { }
 
 	onSubmit(): void {
-		if (this.playerOne.toLowerCase().trim() === this.playerTwo.toLowerCase().trim()) {
+		if (this.sanitizeName(this.playerOne) === this.sanitizeName(this.playerTwo)) {
 			this.errorMessage = 'You cannot play against yourself!';
 		} else {
-			this.router.navigate(['/round', this.playerOne, this.playerTwo]);
+			this.router.navigate(['/round', this.sanitizeName(this.playerOne), this.sanitizeName(this.playerTwo)]);
 		}
+	}
+
+	sanitizeName(name) : String {
+		return name.charAt(0).toUpperCase() + name.toLowerCase().trim().slice(1);
 	}
 
 }

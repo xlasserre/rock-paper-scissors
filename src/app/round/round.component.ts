@@ -13,7 +13,7 @@ export class RoundComponent implements OnInit {
 
 	playersNames: String[];
 	players: {
-		id: String, 
+		_id: String, 
 		name: String, 
 		points: number, 
 		currentPoints: number,
@@ -32,17 +32,18 @@ export class RoundComponent implements OnInit {
 		winner: String
 	}[] = [];
 	lastSelectedMove: String;
+	errorMessage: String = undefined;
 
 	constructor(private route: ActivatedRoute,
 				private playersService: PlayersService) {
 		this.players = [ {
-			id: undefined, 
+			_id: undefined, 
 			name: '', 
 			points: undefined, 
 			currentPoints: 0,
 			playerNumber: 1,
 		}, {
-			id: undefined, 
+			_id: undefined, 
 			name: '', 
 			points: undefined, 
 			currentPoints: 0,
@@ -72,16 +73,35 @@ export class RoundComponent implements OnInit {
 			let p2 = params['playerTwo'];
 
 			this.playersService.getPlayer(p1)
-				.subscribe(
-					data => {
-						let newPlayer = {
-							playerNumber: 1,
-							currentPoints: 0,
-						};
-						console.log(data);
-					},
-					error => { console.log(error); }
-				);
+			.subscribe(
+				data => {
+					if (!data.error) {
+						if (data.obj.length) { //if found, assign
+							let player1Updated = Object.assign(this.players[0], data.obj[0]);
+							this.players[0] = player1Updated;
+						} else { //else just add name
+							this.players[0].name = p1;
+						}
+					}
+				},
+				error => { this.errorMessage = error; }
+			);
+
+			this.playersService.getPlayer(p2)
+			.subscribe(
+				data => {
+					if (!data.error) {
+						if (data.obj.length) { //if found, assign
+							let player2Updated = Object.assign(this.players[1], data.obj[0]);
+							this.players[1] = player2Updated;
+						} else { //else just add name
+							this.players[0].name = p1;
+						}
+					}
+					console.log(this.players);
+				},
+				error => { this.errorMessage = error; }
+			);
 		});
 		console.log(this.playersNames);
 		console.log(this.currentPlayer);
