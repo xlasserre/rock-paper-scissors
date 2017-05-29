@@ -5,11 +5,13 @@ const http = require('http');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
+const MONGO_DB = process.env.MONGODB_URI || 'localhost:27017/game-of-drones';
+
 // Get our API routes
 const api = require('./server/routes/api');
 
 const app = express();
-mongoose.connect('localhost:27017/game-of-drones');
+mongoose.connect(MONGO_DB);
 
 // Parsers for POST data
 app.use(bodyParser.json());

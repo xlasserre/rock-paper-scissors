@@ -9,7 +9,6 @@ export class PlayersService {
 	constructor(private http: Http) { }
 
 	data = {};
-	env_url = 'http://localhost:3000';
 
 	getPlayer(name: String) {
 		this.data = {
@@ -17,7 +16,7 @@ export class PlayersService {
 		}
 		let body = JSON.stringify(this.data);
 		let headers = new Headers({'Content-Type': 'application/json'});
-		return this.http.post(this.env_url + '/api/action/getPlayerByName', body, {headers: headers})
+		return this.http.post('/api/action/getPlayerByName', body, {headers: headers})
       		.map(res => res.json())
 			.catch(error => Observable.throw(error.json()));
 	}
@@ -28,7 +27,7 @@ export class PlayersService {
 		}
 		let body = JSON.stringify(this.data);
 		let headers = new Headers({'Content-Type': 'application/json'});		
-		return this.http.post(this.env_url + '/api/action/upsertPlayer', body, {headers: headers})
+		return this.http.post('/api/action/upsertPlayer', body, {headers: headers})
       		.map(res => res.json())
 			.catch(error => Observable.throw(error.json()));
 	}
