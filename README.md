@@ -1,5 +1,7 @@
 # Game Of Drones
 
+Site: https://game-of-drones.herokuapp.com
+
 This project uses Mongo, Express, Node and Angular 2.
 
 #### To run this project in localhost you need:
