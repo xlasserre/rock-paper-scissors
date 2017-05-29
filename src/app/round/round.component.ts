@@ -42,15 +42,15 @@ export class RoundComponent implements OnInit {
 				private playersService: PlayersService,
 				private router: Router) {
 		this.players = [ {
-			_id: undefined, 
+			_id: null, 
 			name: '', 
-			points: undefined, 
+			points: 0, 
 			currentPoints: 0,
 			playerNumber: 1,
 		}, {
-			_id: undefined, 
+			_id: null, 
 			name: '', 
-			points: undefined, 
+			points: 0, 
 			currentPoints: 0,
 			playerNumber: 2,
 		} ];
@@ -107,9 +107,6 @@ export class RoundComponent implements OnInit {
 				error => { this.errorMessage = error; }
 			);
 		});
-		console.log(this.currentPlayer);
-		console.log(this.currentRound);
-		console.log(this.players);
 	}
 
 
@@ -118,7 +115,6 @@ export class RoundComponent implements OnInit {
 	 * or starts a new one
 	 */
 	nextPlayerOrRound(): void {
-		console.log('currentPlayer', this.currentPlayer);
 		if (this.currentPlayer === 1) {
 			if (!this.currentRound.playerOneMove) { //they did not chose move
 				this.errorMessage = 'You must choose a move';
@@ -133,51 +129,63 @@ export class RoundComponent implements OnInit {
 				this.nextRoundOrFinish();
 			}
 		}	
-		console.log('this.rounds', this.rounds);
-		console.log('this.currentRound', this.currentRound);
-		console.log('this.players', this.players);
 	}
 
 	nextRoundOrFinish(): void {
-		
+		let that = this;
 		//add current round to rounds
 		this.rounds.push(this.currentRound);	
-		if (this.currentRound.roundNumber === 1) { // continue
+		if (this.currentRound.roundNumber < 3) { //continue
 			//create new round
 			this.createNewRound(this.currentRound.roundNumber + 1);
 			this.currentPlayer = 1;
-		} else if (this.currentRound.roundNumber >= 2) { //if tie, or diff by one point
-			if (this.players[0].currentPoints === this.players[1].currentPoints ||
-				this.players[0].currentPoints - this.players[1].currentPoints === 1 ||
-				this.players[1].currentPoints - this.players[0].currentPoints === 1) {
+		} else {//if tie, continue
+			if (this.players[0].currentPoints === this.players[1].currentPoints) {
 					//create new round
 					this.createNewRound(this.currentRound.roundNumber + 1);
 					this.currentPlayer = 1;
+			} else if (this.players[0].currentPoints < 3 && this.players[1].currentPoints < 3) { //did not reach 3 pts
+				//create new round
+				this.createNewRound(this.currentRound.roundNumber + 1);
+				this.currentPlayer = 1;
 			} else {
-				if (this.players[0].currentPoints > this.players[1].currentPoints) { //player 1 won					
+				if (this.players[0].currentPoints === 3) { //player 1 won, add 1 point				
 					this.gameWinner = this.players[0].name;
-				} else { //player 2 won
+					this.players[0].points++;
+				} else if (this.players[1].currentPoints === 3) { //player 2 won, add 1 point
 					this.gameWinner = this.players[1].name;
+					this.players[1].points++;
 				}
-				//save data
-
-				//go to winner page
-				this.router.navigate(['/winner', this.gameWinner]);
+				
+				that.sendDataToDb(that.players[0], function() {
+					that.sendDataToDb(that.players[1], function() {
+						//go to winner page
+						that.router.navigate(['/winner', that.gameWinner]);
+					});					
+				});				
 			}
-		} /*else { //if fourth round, there is a winner			
-			if (this.players[0].currentPoints > this.players[1].currentPoints) { //player 1 won
-				//save data
-
-				//go to winner page
-			} else { //player 2 won
-
-			}
-		}*/
-		console.log('this.rounds', this.rounds);
-		console.log('this.players', this.players);
+		} 
 	}
 
-	/*
+	/**
+	 * Send data to db
+	 */
+	 sendDataToDb(player: any, callback: Function) : void {
+		let dbPlayer = {
+			_id: player._id,
+			name: player.name,
+			points: player.points
+		}
+		this.playersService.upsertPlayer(player)
+			.subscribe(
+				data => {
+					callback();
+				},
+				error => { this.errorMessage = error; }
+			);
+	 }
+
+	/**
 	 * Creates a new round
 	 */
 	createNewRound(roundNumber: number) : void {
@@ -214,8 +222,6 @@ export class RoundComponent implements OnInit {
 				this.currentRound.winner = 'tie';
 			}
 		}
-		console.log('this.rounds', this.rounds);
-		console.log('this.players', this.players);
 	}
 
 	/*
