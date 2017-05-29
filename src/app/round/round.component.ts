@@ -160,7 +160,9 @@ export class RoundComponent implements OnInit {
 				that.sendDataToDb(that.players[0], function() {
 					that.sendDataToDb(that.players[1], function() {
 						//go to winner page
-						that.router.navigate(['/winner', that.gameWinner]);
+						that.router.navigate(['/winner', that.gameWinner, 
+							{p1: that.players[0].name, p1Pts: that.players[0].points, 
+							p2: that.players[1].name, p2Pts: that.players[1].points}]);
 					});					
 				});				
 			}
