@@ -1,4 +1,4 @@
-# Game Of Drones
+# Rock, Paper, Scissors
 
 Site: https://game-of-drones.herokuapp.com
 
